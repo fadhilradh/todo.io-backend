@@ -7,7 +7,7 @@ const { generateRandomID } = require("../utils");
 const DEFAULT_USER_ROLE = "user";
 
 const registerUser = async (req, response) => {
-  const { username, password = "user" } = req.body;
+  const { username, password } = req.body;
   if (!username || !password)
     return response
       .status(400)
@@ -67,7 +67,6 @@ const loginUser = async (req, res) => {
   pool
     .query(query)
     .then((result) => {
-      console.log("🚀 ~ file: auth.js:70 ~ .then ~ result", result.rows);
       if (result.rows.length === 0) {
         return res.status(400).json({ message: "Username not found" });
       }
@@ -78,12 +77,12 @@ const loginUser = async (req, res) => {
       if (!isPasswordMatch) {
         return res.status(400).json({ message: "Invalid password" });
       }
-      const userData = result.rows[0];
+      const { id, role, username } = result.rows[0];
       const token = jwt.sign(
         {
-          id: userData.id,
+          id,
           username,
-          role: DEFAULT_USER_ROLE,
+          role,
         },
         `${process.env.JWT_SECRET}`,
         {
@@ -96,7 +95,7 @@ const loginUser = async (req, res) => {
       });
       res
         .status(201)
-        .json({ message: "Login successful", userId: userData.id });
+        .json({ message: "Login successful", userId: id, role, username });
     })
     .catch((err) => {
       console.log(err.stack);
@@ -104,7 +103,18 @@ const loginUser = async (req, res) => {
     });
 };
 
+const logoutUser = (req, res) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "Logout failed" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
+  logoutUser,
 };
