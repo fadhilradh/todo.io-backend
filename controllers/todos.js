@@ -59,4 +59,23 @@ function deleteTodo(req, res) {
     });
 }
 
-module.exports = { getTodoByUserId, postTodo, deleteTodo };
+function updateTodoStatus(req, res) {
+  const { id } = req.params;
+  const { isCompleted } = req.body;
+  const query = {
+    text: "UPDATE todo SET is_done = $1 WHERE hash_id = $2",
+    values: [!isCompleted, id],
+  };
+
+  pool
+    .query(query)
+    .then((result) => {
+      res.json({ message: "Task marked done successfully" });
+    })
+    .catch((err) => {
+      console.log(err.stack);
+      res.status(400).json({ message: err.stack });
+    });
+}
+
+module.exports = { getTodoByUserId, postTodo, deleteTodo, updateTodoStatus };

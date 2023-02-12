@@ -1,58 +1,41 @@
 const jwt = require("jsonwebtoken");
+const { sendError } = require("../utils/errors");
 
-const adminAuth = (req, res, next) => {
-  const token = req.cookies.jwt;
+const verifyToken = (req, res, next, requiredRole) => {
+  const bearerHeader = req.headers["authorization"];
 
-  if (token) {
-    jwt.verify(token, `${process.env.JWT_SECRET}`, (err, decodedToken) => {
-      if (err) {
-        return res.status(401).json({
-          message: "You are unauthorized to access this page (unknown error)",
-        });
-      } else {
-        if (decodedToken.role !== "admin") {
-          return res.status(401).json({
-            message: "You are unauthorized to access this page. Wrong role",
-          });
-        } else {
-          next();
-        }
-      }
-    });
+  if (typeof bearerHeader !== "undefined") {
+    const bearerToken = bearerHeader.split(" ")?.[1];
+
+    req.token = bearerToken;
+
+    try {
+      const decoded = jwt.verify(bearerToken, `${process.env.JWT_SECRET}`);
+      req.user = decoded;
+      if (decoded.role !== requiredRole)
+        return sendError(
+          res,
+          401,
+          "Insufficient permission to access this endpoint"
+        );
+      next();
+    } catch (e) {
+      sendError(res, 401, "Token is invalid or has expired");
+    }
   } else {
-    return res.status(401).json({
-      message: "You are unauthorized to access this page. Token not available",
-    });
+    sendError(res, 401, "Authorization token not found");
   }
 };
 
-const userAuth = (req, res, next) => {
-  const token = req.cookies.jwt;
+const verifyAdminToken = (req, res, next) => {
+  verifyToken(req, res, next, "admin");
+};
 
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-      if (err) {
-        return res
-          .status(401)
-          .json({ message: "You are unauthorized to access this page" });
-      } else {
-        if (!["admin", "user"].includes(decodedToken.role)) {
-          return res
-            .status(401)
-            .json({ message: "You are unauthorized to access this page" });
-        } else {
-          next();
-        }
-      }
-    });
-  } else {
-    return res.status(401).json({
-      message:
-        "You are unauthorized to access this page. Token not available or invalid",
-    });
-  }
+const verifyUserToken = (req, res, next) => {
+  verifyToken(req, res, next, "user");
 };
 
 module.exports = {
-  adminAuth,
+  verifyAdminToken,
+  verifyUserToken,
 };

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { TOKEN_EXPIRATION } = require("../configs");
 const pool = require("../database");
 const { generateRandomID } = require("../utils");
+const { sendError } = require("../utils/errors");
 
 function getAllUsers(req, response) {
   const query = { text: "SELECT * FROM users" };
@@ -12,45 +13,38 @@ function getAllUsers(req, response) {
     .catch((err) => console.log(err.stack));
 }
 
-const createUser = async (req, response) => {
+const createUser = async (req, res) => {
   const { username, password, role = "user" } = req.body;
-  if (!username || !password)
-    return response
-      .status(400)
-      .json({ message: "Username and password are required" });
-  const encryptedPass = await bcrypt.hashSync(password, 10);
+  if (!username || !password) {
+    return sendError(res, 400, "Username and password are required");
+  }
 
-  const query = {
-    text: "INSERT INTO users (id, username, password, role, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-    values: [generateRandomID(), username, encryptedPass, role, new Date()],
-  };
-  pool
-    .query(query)
-    .then((res) => {
-      const userData = res.rows[0];
-      const token = jwt.sign(
-        {
-          id: userData.id,
-          username,
-          role,
-        },
-        `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: TOKEN_EXPIRATION,
-        }
-      );
-      response.cookie("jwt", token, {
-        httpOnly: true,
-        maxAge: TOKEN_EXPIRATION * 1000, // converted to milliseconds
-      });
-      response
-        .status(201)
-        .json({ message: "User created successfully!", user: userData.id });
-    })
-    .catch((err) => {
-      console.log(err.stack);
-      response.status(400).json({ error: err.stack });
-    });
+  try {
+    const encryptedPass = await bcrypt.hashSync(password, 10);
+    const query = {
+      text: "INSERT INTO users (id, username, password, role, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      values: [generateRandomID(), username, encryptedPass, role, new Date()],
+    };
+
+    const { rows } = await pool.query(query);
+    const userData = rows[0];
+    jwt.sign(
+      {
+        id: userData.id,
+        username,
+        role,
+      },
+      `${process.env.JWT_SECRET}`,
+      {
+        expiresIn: TOKEN_EXPIRATION,
+      }
+    );
+    return res
+      .status(201)
+      .json({ message: "User created successfully!", user: userData.id });
+  } catch (err) {
+    handleError(res, err);
+  }
 };
 
 module.exports = { getAllUsers, createUser };

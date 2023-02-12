@@ -1,56 +1,74 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const pool = require("../database");
 const jwt = require("jsonwebtoken");
-const { TOKEN_EXPIRATION } = require("../configs");
+const { TOKEN_EXPIRATION, REFRESH_TOKEN_EXPIRATION } = require("../configs");
 const { generateRandomID } = require("../utils");
 
 const DEFAULT_USER_ROLE = "user";
 
 const registerUser = async (req, response) => {
-  const { username, password } = req.body;
-  if (!username || !password)
-    return response
-      .status(400)
-      .json({ message: "Username and password are required" });
-  const encryptedPass = await bcrypt.hashSync(password, 10);
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      throw new Error("Username and password are required");
+    }
+    const encryptedPass = await bcrypt.hashSync(password, 10);
 
-  const query = {
-    text: "INSERT INTO users (id, username, password, role, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-    values: [
-      generateRandomID(),
-      username,
-      encryptedPass,
-      DEFAULT_USER_ROLE,
-      new Date(),
-    ],
-  };
-  pool
-    .query(query)
-    .then((res) => {
-      const userData = res.rows[0];
-      const token = jwt.sign(
-        {
-          id: userData.id,
-          username,
-          role: DEFAULT_USER_ROLE,
-        },
-        `${process.env.JWT_SECRET}`,
-        {
-          expiresIn: TOKEN_EXPIRATION,
-        }
-      );
-      response.cookie("jwt", token, {
-        httpOnly: true,
-        maxAge: TOKEN_EXPIRATION * 1000, // converted to milliseconds
-      });
-      response
-        .status(201)
-        .json({ message: "User created successfully!", userId: userData.id });
-    })
-    .catch((err) => {
-      console.log(err.stack);
-      response.status(400).json({ error: err.stack });
+    const query = {
+      text: "INSERT INTO users (id, username, password, role, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      values: [
+        generateRandomID(),
+        username,
+        encryptedPass,
+        DEFAULT_USER_ROLE,
+        new Date(),
+      ],
+    };
+
+    const { rows } = await pool.query(query);
+    const { id, role, username: userName } = rows[0];
+    const jwtSecret = `${process.env.JWT_SECRET}`;
+
+    const accessToken = jwt.sign(
+      {
+        id,
+        username: userName,
+        role,
+      },
+      jwtSecret,
+      {
+        expiresIn: TOKEN_EXPIRATION,
+      }
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        id,
+        username: userName,
+        role,
+      },
+      jwtSecret,
+      {
+        expiresIn: REFRESH_TOKEN_EXPIRATION,
+      }
+    );
+
+    response.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      maxAge: REFRESH_TOKEN_EXPIRATION * 1000,
     });
+
+    response.status(201).json({
+      message: "User created successfully!",
+      userId: id,
+      role,
+      username: userName,
+      accessToken,
+    });
+  } catch (error) {
+    console.error(error.message);
+    response.status(400).json({ error: error.message });
+  }
 };
 
 const loginUser = async (req, res) => {
@@ -78,24 +96,41 @@ const loginUser = async (req, res) => {
         return res.status(400).json({ message: "Invalid password" });
       }
       const { id, role, username } = result.rows[0];
-      const token = jwt.sign(
+      const jwtSecret = `${process.env.JWT_SECRET}`;
+      const accessToken = jwt.sign(
         {
           id,
-          username,
+          username: username,
           role,
         },
-        `${process.env.JWT_SECRET}`,
+        jwtSecret,
         {
           expiresIn: TOKEN_EXPIRATION,
         }
       );
-      res.cookie("jwt", token, {
+
+      const refreshToken = jwt.sign(
+        {
+          id,
+          username: username,
+          role,
+        },
+        jwtSecret,
+        {
+          expiresIn: REFRESH_TOKEN_EXPIRATION,
+        }
+      );
+      res.cookie("jwt", refreshToken, {
         httpOnly: true,
         maxAge: TOKEN_EXPIRATION * 1000, // converted to milliseconds
       });
-      res
-        .status(201)
-        .json({ message: "Login successful", userId: id, role, username });
+      res.status(201).json({
+        message: "Login successful",
+        userId: id,
+        role,
+        username,
+        accessToken,
+      });
     })
     .catch((err) => {
       console.log(err.stack);
