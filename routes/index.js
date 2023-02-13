@@ -16,6 +16,10 @@ const {
 
 const router = express.Router();
 
+router.get("/", (req, res) => {
+  res.json({ mesage: "Hello World!" });
+});
+
 const TODO_BASE_PATH = "/todos";
 router.get(TODO_BASE_PATH, getTodoByUserId);
 router.post(TODO_BASE_PATH, postTodo);
