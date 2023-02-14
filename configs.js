@@ -1,7 +1,9 @@
 const PORT = process.env.PORT || 8000;
 const POSTGRES_CONFIG = {
-  database: "postgres",
-  password: "peni1941",
+  database: process.env.POSTGRES_DB || "postgres",
+  password: process.env.POSTGRES_PASSWORD || "peni1941",
+  port: process.env.POSTGRES_PORT || 5432,
+  user: process.env.POSTGRES_USER || "skygazer",
 };
 const TOKEN_EXPIRATION = 3 * 60 * 60; // 3 hours
 const REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60; // 7 days

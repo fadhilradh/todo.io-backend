@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { generateRandomID } = require("../utils");
 
 function getTodoByUserId(req, response) {
-  const token = req.cookies.jwt;
+  const token = req.headers.authorization.split(" ")[1];
   jwt.verify(token, `${process.env.JWT_SECRET}`, (err, decodedToken) => {
     if (err) {
       return response
