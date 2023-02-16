@@ -6,6 +6,7 @@ Roadmap :
 
 - [ ] Patch todo service
 - [ ] Upgrade to Typescript 
+- [ ] Refactor reusable function
 - [ ] Patch todo order ?
 
 You can check the frontend repo here :
