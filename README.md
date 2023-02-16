@@ -1,7 +1,7 @@
 # Todo.io Fullstack App 
 
 ### Open for Contributions
-#### Check roadmap below to get ideas where to start :dowm
+#### Check roadmap below to get ideas where to start :down
 
 Stack : Express, Postgres, node-postgres lib
 
