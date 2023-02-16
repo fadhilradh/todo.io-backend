@@ -2,12 +2,19 @@
 
 Stack : Express, Postgres, node-postgres lib
 
+Features : 
+
+- [x] Create, delete, and mark todo as done
+- [x] Register and login with bearer token
+- [x] Protected endpoint for admin to create user
+
 Roadmap : 
 
-- [ ] Patch todo service
+- [ ] Patch todo title
 - [ ] Upgrade to Typescript 
 - [ ] Refactor reusable function
-- [ ] Patch todo order ?
+- [ ] Patch todo order
+- [ ] Validate email
 
 You can check the frontend repo here :
 
