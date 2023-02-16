@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { TOKEN_EXPIRATION } = require("../configs");
 const pool = require("../database");
 const { generateRandomID } = require("../utils");
-const { sendError } = require("../utils/errors");
+const { sendError, handleError } = require("../utils/errors");
 
 function getAllUsers(req, response) {
   const query = { text: "SELECT * FROM users" };

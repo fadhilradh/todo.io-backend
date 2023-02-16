@@ -1,5 +1,4 @@
-const pool = require("../database/index.js");
-const { adminAuth, verifyAdminToken } = require("../middleware/auth.js");
+const { verifyAdminToken } = require("../middleware/auth.js");
 const { getAllUsers, createUser } = require("../controllers/users.js");
 const express = require("express");
 const {
@@ -7,6 +6,7 @@ const {
   postTodo,
   deleteTodo,
   updateTodoStatus,
+  updateTodoTitle,
 } = require("../controllers/todos.js");
 const {
   registerUser,
@@ -17,7 +17,7 @@ const {
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  res.json({ mesage: "Hello World!" });
+  res.json({ mesage: "Welcome to todo BE !" });
 });
 
 const TODO_BASE_PATH = "/todos";
@@ -25,6 +25,7 @@ router.get(TODO_BASE_PATH, getTodoByUserId);
 router.post(TODO_BASE_PATH, postTodo);
 router.delete(`${TODO_BASE_PATH}/:id`, deleteTodo);
 router.patch(`${TODO_BASE_PATH}/:id`, updateTodoStatus);
+router.patch(`${TODO_BASE_PATH}/title/:id`, updateTodoTitle);
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
