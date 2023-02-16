@@ -4,9 +4,9 @@ Stack : Express, Postgres, node-postgres lib
 
 Roadmap : 
 
-[ ] Patch todo service
-[ ] Upgrade to Typescript 
-[ ] Patch todo order ?
+- [ ] Patch todo service
+- [ ] Upgrade to Typescript 
+- [ ] Patch todo order ?
 
 You can check the frontend repo here :
 
