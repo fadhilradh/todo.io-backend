@@ -17,7 +17,7 @@ Roadmap :
 - [ ] Upgrade to Typescript 
 - [ ] Refactor reusable function
 - [ ] Patch todo order
-- [ ] Validate email
+- [ ] Implement best practice for node-pg : https://node-postgres.com/guides/project-structure
 
 You can check the frontend repo here :
 
