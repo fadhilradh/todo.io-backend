@@ -78,4 +78,32 @@ function updateTodoStatus(req, res) {
     });
 }
 
-module.exports = { getTodoByUserId, postTodo, deleteTodo, updateTodoStatus };
+function updateTodoTitle(req, res) {
+  const { id } = req.params;
+  const { title } = req.body;
+  const query = {
+    text: "UPDATE todo SET task = $1 WHERE hash_id = $2",
+    values: [title, id],
+  };
+
+  try {
+    const result = pool.query(query);
+    res
+      .status(200)
+      .json({
+        message: "Task title updated successfully",
+        result: result.rows,
+      });
+  } catch (error) {
+    console.log(error.stack);
+    handleError(res, error);
+  }
+}
+
+module.exports = {
+  getTodoByUserId,
+  postTodo,
+  deleteTodo,
+  updateTodoStatus,
+  updateTodoTitle,
+};
