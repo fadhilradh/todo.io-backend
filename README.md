@@ -13,7 +13,7 @@ Features :
 
 Roadmap : 
 
-- [x] Patch todo title
+- [x] Patch todo
 - [ ] Upgrade to Typescript 
 - [ ] Refactor reusable function
 - [ ] Patch todo order
