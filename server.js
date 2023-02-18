@@ -1,8 +1,8 @@
 const express = require("express");
+require("dotenv").config();
 const { PORT, CORS_CONFIG } = require("./configs");
 const router = require("./routes");
 const cors = require("cors");
-const { generateRandomID } = require("./utils");
 const cookieParser = require("cookie-parser");
 
 const app = express();
