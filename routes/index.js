@@ -16,8 +16,17 @@ const {
 
 const router = express.Router();
 
+router.get(
+  "/.well-known/pki-validation/F4B98923733B57B85171547E51F4E007.txt",
+  (req, res) => {
+    res.sendFile(
+      "/home/ec2-user/todo.io-backend/ssl/F4B98923733B57B85171547E51F4E007.txt"
+    );
+  }
+);
+
 router.get("/", (req, res) => {
-  res.json({ mesage: "Welcome to todo BE !" });
+  res.json({ mesage: "Welcome to todo backend !" });
 });
 
 const TODO_BASE_PATH = "/todos";
