@@ -6,10 +6,14 @@ const { generateRandomID } = require("../utils");
 const { sendError, handleError } = require("../utils/errors");
 
 function getAllUsers(req, response) {
-  const query = { text: "SELECT * FROM users" };
+  const query = {
+    text: "SELECT todo.task, users.username FROM todo FULL JOIN users ON users.id = todo.user_id",
+  };
   pool
     .query(query)
-    .then((res) => response.json({ users: res.rows }))
+    .then((result) => {
+      response.json({ users: result.rows });
+    })
     .catch((err) => console.log(err.stack));
 }
 
