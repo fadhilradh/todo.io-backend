@@ -13,17 +13,9 @@ const {
   loginUser,
   logoutUser,
 } = require("../controllers/auth.js");
+const getSSLFile = require("../controllers/ssl.js");
 
 const router = express.Router();
-
-router.get(
-  "/.well-known/pki-validation/F4B98923733B57B85171547E51F4E007.txt",
-  (req, res) => {
-    res.sendFile(
-      "/home/ec2-user/todo.io-backend/ssl/F4B98923733B57B85171547E51F4E007.txt"
-    );
-  }
-);
 
 router.get("/", (req, res) => {
   res.json({ mesage: "Welcome to todo backend !" });
@@ -43,5 +35,10 @@ router.get("/logout", logoutUser);
 const USER_BASE_PATH = "/user";
 router.get(USER_BASE_PATH, verifyAdminToken, getAllUsers);
 router.post(USER_BASE_PATH, verifyAdminToken, createUser);
+
+router.get(
+  "/.well-known/pki-validation/F4B98923733B57B85171547E51F4E007.txt",
+  getSSLFile
+);
 
 module.exports = router;
