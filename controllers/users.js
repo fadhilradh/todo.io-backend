@@ -7,7 +7,7 @@ const { sendError, handleError } = require("../utils/errors");
 
 function getAllUsers(req, response) {
   const query = {
-    text: "SELECT todo.task, users.username FROM todo FULL JOIN users ON users.id = todo.user_id",
+    text: "SELECT todo.task, users.username, todo.is_done FROM todo LEFT JOIN users ON users.id = todo.user_id",
   };
   pool
     .query(query)
