@@ -1,4 +1,6 @@
 const { customAlphabet, nanoid } = require("nanoid");
+const crypto = require("crypto");
+const { promisify } = require("util");
 
 function generateRandomID() {
   const nanoid = customAlphabet(
@@ -9,4 +11,8 @@ function generateRandomID() {
   return nanoid();
 }
 
-module.exports = { generateRandomID };
+function generateRandomBytes() {
+  return promisify(crypto.randomBytes);
+}
+
+module.exports = { generateRandomID, generateRandomBytes };
