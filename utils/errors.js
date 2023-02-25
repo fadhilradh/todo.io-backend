@@ -1,4 +1,4 @@
-const sendError = (res, statusCode, message) => {
+const sendCustomError = (res, statusCode, message) => {
   return res.status(statusCode).json({ error: message });
 };
 
@@ -8,6 +8,6 @@ const handleError = (res, err) => {
 };
 
 module.exports = {
-  sendError,
+  sendCustomError,
   handleError,
 };

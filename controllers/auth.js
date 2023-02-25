@@ -95,7 +95,7 @@ const loginUser = async (req, res) => {
       if (!isPasswordMatch) {
         return res.status(400).json({ message: "Invalid password" });
       }
-      const { id, role, username } = result.rows[0];
+      const { id, role, username, profile_pic_url } = result.rows[0];
       const jwtSecret = `${process.env.JWT_SECRET}`;
       const accessToken = jwt.sign(
         {
@@ -124,12 +124,14 @@ const loginUser = async (req, res) => {
         httpOnly: true,
         maxAge: TOKEN_EXPIRATION * 1000, // converted to milliseconds
       });
+
       res.status(201).json({
         message: "Login successful",
         userId: id,
         role,
         username,
         accessToken,
+        profilePicUrl: profile_pic_url,
       });
     })
     .catch((err) => {
