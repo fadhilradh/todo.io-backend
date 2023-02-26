@@ -16,7 +16,7 @@ Roadmap :
 - [x] Patch todo
 - [x] Provision AWS S3 secure URL
 - [ ] Upgrade to Typescript 
-- [ ] Refactor reusable function
+- [ ] Further refactor codebase
 - [ ] Patch todo order
 - [ ] Implement best practice for node-pg : https://node-postgres.com/guides/project-structure
 
