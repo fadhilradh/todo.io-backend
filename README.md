@@ -14,6 +14,7 @@ Features :
 Roadmap : 
 
 - [x] Patch todo
+- [x] Provision AWS S3 secure URL
 - [ ] Upgrade to Typescript 
 - [ ] Refactor reusable function
 - [ ] Patch todo order
