@@ -1,13 +1,13 @@
 # Todo.io Fullstack App : Backend
 
-### Open for Contributions
+### Open for Contributions 
 #### Check roadmap below to get ideas where to start ⬇️
 
 Stack : Express, Postgres, node-postgres lib
 
 Features : 
 
-- [x] Create, delete, and mark todo as done
+- [x] Create, delete, and mark todo as done / not done
 - [x] Register and login with bearer token
 - [x] Protected endpoint for admin to create user
 
